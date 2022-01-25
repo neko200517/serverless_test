@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "aws-sdk": "^2.1018.0",
+    "crypto": "^1.0.1",
+    "pg": "^8.7.1"
+  },
+  "devDependencies": {
+    "serverless-offline": "^8.2.0"
+  }
+}

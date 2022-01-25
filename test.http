@@ -1,0 +1,100 @@
+@baseurl = http://localhost:3000/dev
+# @baseurl = https://0ni9qajswi.execute-api.ap-northeast-1.amazonaws.com/dev
+
+###
+
+GET  {{baseurl}}/condition?username=user-dev-1&startDate=&endDate=2022&orderBy=condition_date
+
+###
+
+POST {{baseurl}}/condition/save
+Content-Type: application/json
+
+{ "username" : "user-1", "date" : "20220108", "bp1" : "70" }
+
+###
+
+GET  {{baseurl}}/condition/csv?username=user-dev-1
+
+###
+
+GET {{baseurl}}/graph?username=user-2&year=2021
+
+###
+
+GET {{baseurl}}/graph_day?username=user-dev-1&addDate=-14&condition_date=20220111
+
+###
+
+GET {{baseurl}}/graph_month?username=user-dev-1&index=1&max=30
+
+###
+
+POST {{baseurl}}/license
+Content-Type: application/json
+
+{ "username" : "user-2" }
+
+###
+
+DELETE {{baseurl}}/license
+Content-Type: application/json
+
+{ "username" : "user-2" }
+
+###
+
+GET {{baseurl}}/license?pool_username=user-1
+
+###
+
+GET {{baseurl}}/user?username=user-1
+
+###
+
+POST {{baseurl}}/user/regist
+Content-Type: application/json
+
+{ "username" : "user-22" }
+
+###
+
+POST {{baseurl}}/user/confirm
+Content-Type: application/json
+
+{ "username" : "user-2", "confirm" : true }
+
+###
+POST {{baseurl}}/user/confirm
+Content-Type: application/json
+
+{ "username" : "user-2", "interview_started_at" : "2021/01/01" }
+
+###
+
+GET {{baseurl}}/staff?username=user&like=true&orderBy=pool_username
+
+###
+
+POST {{baseurl}}/staff/regist
+Content-Type: application/json
+
+{ "username" : "user-3" }
+
+###
+
+POST {{baseurl}}/staff/confirm
+Content-Type: application/json
+
+{ "username" : "user-2", "confirm" : false }
+
+###
+
+GET {{baseurl}}/log?username=user
+
+###
+
+POST {{baseurl}}/log/regist
+Content-Type: application/json
+
+{ "user_username" : "user-1", "staff_username": "user-2" }
