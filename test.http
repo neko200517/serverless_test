@@ -1,9 +1,8 @@
 @baseurl = http://localhost:3000/dev
-# @baseurl = https://0ni9qajswi.execute-api.ap-northeast-1.amazonaws.com/dev
 
-###
+### condition
 
-GET  {{baseurl}}/condition?username=user-dev-1&startDate=&endDate=2022&orderBy=condition_date
+GET  {{baseurl}}/condition?username=user-dev-1&startDate=20220101&endDate=20220202&orderBy=condition_date
 
 ###
 
@@ -28,7 +27,7 @@ GET {{baseurl}}/graph_day?username=user-dev-1&addDate=-14&condition_date=2022011
 
 GET {{baseurl}}/graph_month?username=user-dev-1&index=1&max=30
 
-###
+### license
 
 POST {{baseurl}}/license
 Content-Type: application/json
@@ -46,7 +45,7 @@ Content-Type: application/json
 
 GET {{baseurl}}/license?pool_username=user-1
 
-###
+### user
 
 GET {{baseurl}}/user?username=user-1
 
@@ -70,7 +69,7 @@ Content-Type: application/json
 
 { "username" : "user-2", "interview_started_at" : "2021/01/01" }
 
-###
+### starff
 
 GET {{baseurl}}/staff?username=user&like=true&orderBy=pool_username
 
@@ -88,7 +87,7 @@ Content-Type: application/json
 
 { "username" : "user-2", "confirm" : false }
 
-###
+### log
 
 GET {{baseurl}}/log?username=user
 

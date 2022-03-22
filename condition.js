@@ -3,7 +3,7 @@
 const { getPostgresClient } = require('./postgres');
 const {
   formatYYYYMMDD,
-  formatDate,
+  formatStringToDate,
   zeroPadding,
   createDateString,
   responceTemplate,
@@ -26,7 +26,6 @@ module.exports.condition = async (event) => {
   const orderBy = event.queryStringParameters.orderBy;
 
   try {
-    // startDateの指定がなければ面談開始日からスタート
     if (!startDate) {
       sql = `
         SELECT
@@ -58,9 +57,17 @@ module.exports.condition = async (event) => {
 
     // optoinal
     if (orderBy) {
-      sql += `ORDER BY $4`;
-      params.push(orderBy);
+      switch (orderBy) {
+        case 'pool_username':
+          sql += ` ORDER BY pool_username`;
+          break;
+        case 'condition_date':
+          sql += ` ORDER BY condition_date`;
+          break;
+      }
     }
+
+    console.log(sql);
 
     res = await db.execute(sql, params);
   } catch (e) {
@@ -96,7 +103,6 @@ module.exports.get_csv = async (event) => {
   const username = event.queryStringParameters.username;
 
   try {
-    // ユーザ履歴の最小と最大を取得
     sql = `
       SELECT
         MIN(condition_date) AS min,
@@ -163,6 +169,7 @@ module.exports.save = async (event) => {
   let params = [];
   const db = await getPostgresClient();
   const body = JSON.parse(JSON.parse(JSON.stringify(event.body)));
+  const nowDateJp = createDateJp();
 
   try {
     sql = `
@@ -199,22 +206,22 @@ module.exports.save = async (event) => {
 
     if (res.length > 0) {
       const weight_date = body.weight
-        ? 'now()'
+        ? nowDateJp
         : createDateString(res[0].weight_updated_at);
       const bp1_date = body.bp1
-        ? 'now()'
+        ? nowDateJp
         : createDateString(res[0].bp1_updated_at);
       const bp2_date = body.bp2
-        ? 'now()'
+        ? nowDateJp
         : createDateString(res[0].bp2_updated_at);
       const bp3_date = body.bp3
-        ? 'now()'
+        ? nowDateJp
         : createDateString(res[0].bp3_updated_at);
       const bp4_date = body.bp4
-        ? 'now()'
+        ? nowDateJp
         : createDateString(res[0].bp4_updated_at);
       const step_date = body.step
-        ? 'now()'
+        ? nowDateJp
         : createDateString(res[0].step_updated_at);
       body.weight = body.weight ? body.weight : res[0].weight;
       body.bp1 = body.bp1 ? body.bp1 : res[0].bp1;
@@ -239,12 +246,14 @@ module.exports.save = async (event) => {
           bp4_updated_at = $11,
           step = $12,
           step_updated_at = $13,
-          updated_at = now()
+          updated_at = '${nowDateJp}'
         WHERE
           pool_username = $14
         AND
           condition_date = $15
       `;
+
+      console.log(sql);
 
       params = [
         strDt,
@@ -264,12 +273,12 @@ module.exports.save = async (event) => {
         body.date,
       ];
     } else {
-      const weight_date = body.weight ? 'now()' : null;
-      const bp1_date = body.bp1 ? 'now()' : null;
-      const bp2_date = body.bp2 ? 'now()' : null;
-      const bp3_date = body.bp3 ? 'now()' : null;
-      const bp4_date = body.bp4 ? 'now()' : null;
-      const step_date = body.step ? 'now()' : null;
+      const weight_date = body.weight ? nowDateJp : null;
+      const bp1_date = body.bp1 ? nowDateJp : null;
+      const bp2_date = body.bp2 ? nowDateJp : null;
+      const bp3_date = body.bp3 ? nowDateJp : null;
+      const bp4_date = body.bp4 ? nowDateJp : null;
+      const step_date = body.step ? nowDateJp : null;
       body.weight = body.weight ? body.weight : null;
       body.bp1 = body.bp1 ? body.bp1 : null;
       body.bp2 = body.bp2 ? body.bp2 : null;
@@ -306,10 +315,12 @@ module.exports.save = async (event) => {
           $10, $11,
           $12, $13,
           $14, $15,
-          now(),
-          now()
+          '${nowDateJp}',
+          '${nowDateJp}'
         )
       `;
+
+      console.log(sql);
 
       params = [
         body.date,
@@ -425,12 +436,16 @@ module.exports.graph_day = async (event) => {
   const condition_date = event.queryStringParameters.condition_date;
 
   // n日前の日付
-  const dt1 = condition_date ? formatDate(condition_date) : createDateJp();
+  const dt1 = condition_date
+    ? formatStringToDate(condition_date)
+    : createDateJp();
   dt1.setDate(dt1.getDate() + addDate);
   const startDate = formatYYYYMMDD(dt1);
 
   // 本日の日付
-  const dt2 = condition_date ? formatDate(condition_date) : createDateJp();
+  const dt2 = condition_date
+    ? formatStringToDate(condition_date)
+    : createDateJp();
   const endDate = formatYYYYMMDD(dt2);
 
   try {

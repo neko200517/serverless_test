@@ -53,7 +53,7 @@ module.exports.createDateString = (dt) => {
  * @param {*} str
  * @returns
  */
-module.exports.formatDate = (str) => {
+module.exports.formatStringToDate = (str) => {
   const y = str.substr(0, 4);
   const m = str.substr(4, 2);
   const d = str.substr(6, 2);
@@ -61,10 +61,28 @@ module.exports.formatDate = (str) => {
 };
 
 /**
+ * 日付をフォーマット
+ * @param {*} date   // 日付オブジェクト
+ * @param {*} format //書式フォーマット
+ * @returns
+ */
+module.exports.formatDate = (date, format) => {
+  format = format.replace(/yyyy/g, date.getFullYear());
+  format = format.replace(/MM/g, ('0' + (date.getMonth() + 1)).slice(-2));
+  format = format.replace(/dd/g, ('0' + date.getDate()).slice(-2));
+  format = format.replace(/HH/g, ('0' + date.getHours()).slice(-2));
+  format = format.replace(/mm/g, ('0' + date.getMinutes()).slice(-2));
+  format = format.replace(/ss/g, ('0' + date.getSeconds()).slice(-2));
+  format = format.replace(/SSS/g, ('00' + date.getMilliseconds()).slice(-3));
+  return format;
+};
+
+/**
  * 日本時間を取得
  */
 module.exports.createDateJp = () => {
-  return new Date(
+  const dt = new Date(
     Date.now() + (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000
-  ).getHours();
+  );
+  return this.formatDate(dt, 'yyyy/MM/dd HH:mm:ss.SSS');
 };

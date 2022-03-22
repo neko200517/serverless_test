@@ -1,7 +1,11 @@
 'use strict';
 
 const { getPostgresClient } = require('./postgres');
-const { responceTemplate, createDateString } = require('./utility.js');
+const {
+  responceTemplate,
+  createDateString,
+  createDateJp,
+} = require('./utility.js');
 
 const table = 'staffs';
 
@@ -61,6 +65,7 @@ module.exports.regist_user = async (event) => {
   const body = JSON.parse(JSON.parse(JSON.stringify(event.body)));
   const username = body.username;
   const confirm = false;
+  const nowDateJp = createDateJp();
 
   // 存在確認
   try {
@@ -92,8 +97,8 @@ module.exports.regist_user = async (event) => {
         VALUES(
           $1,
           $2,
-          now(),
-          now()
+          '${nowDateJp}',
+          '${nowDateJp}'
         )
       `;
 
@@ -134,6 +139,7 @@ module.exports.update_confirm = async (event) => {
   let params = [];
   const db = await getPostgresClient();
   const body = JSON.parse(JSON.parse(JSON.stringify(event.body)));
+  const nowDateJp = createDateJp();
 
   try {
     const username = body.username;
@@ -146,8 +152,8 @@ module.exports.update_confirm = async (event) => {
           ${table}
         SET
           is_confirm = $1,
-          confirmed_at = now(),
-          updated_at = now()
+          confirmed_at = '${nowDateJp}',
+          updated_at = '${nowDateJp}'
         WHERE
           pool_username = $2
       `;
@@ -161,7 +167,7 @@ module.exports.update_confirm = async (event) => {
           ${table}
         SET
           interview_started_at = $1,
-          updated_at = now()
+          updated_at = '${nowDateJp}'
         WHERE
           pool_username = $2
       `;

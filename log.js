@@ -1,7 +1,7 @@
 'use strict';
 
 const { getPostgresClient } = require('./postgres');
-const { responceTemplate } = require('./utility.js');
+const { responceTemplate, createDateJp } = require('./utility.js');
 
 const table = 'logs';
 
@@ -70,6 +70,7 @@ module.exports.set = async (event) => {
   let params = [];
   const db = await getPostgresClient();
   const body = JSON.parse(JSON.parse(JSON.stringify(event.body)));
+  const nowDateJp = createDateJp();
 
   try {
     const user_username = body.user_username;
@@ -85,9 +86,9 @@ module.exports.set = async (event) => {
       VALUES(
         $1,
         $2,
-        now(),
-        now(),
-        now()
+        '${nowDateJp}',
+        '${nowDateJp}',
+        '${nowDateJp}'
       )
     `;
 
